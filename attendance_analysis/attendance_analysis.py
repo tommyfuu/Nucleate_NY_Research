@@ -45,7 +45,7 @@ plt.xlabel('Month', fontsize=14)
 plt.ylabel('Number of Events', fontsize=14)
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/events_per_month.png')
+plt.savefig('./vis/events_per_month.png')
 
 # 1. plot the attendance by numbers in barcharts from high to low from left to right; event names on x-axis
 df_sorted = df_all_events.sort_values(by='Attendees', ascending=False)
@@ -56,7 +56,7 @@ plt.xlabel('Event', fontsize=14)
 plt.ylabel('Number of Attendees', fontsize=14)
 plt.xticks(rotation=90)
 plt.tight_layout()
-plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/attendance_by_event.png')
+plt.savefig('./vis/attendance_by_event.png')
 
 # 2. Plot average attendance number per event by months
 df_all_events['Month'] = df_all_events['Date'].dt.to_period('M')
@@ -75,12 +75,12 @@ plt.ylabel('Average Number of Attendees', fontsize=14)
 plt.xticks(rotation=45)
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
-plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/average_attendance_per_month.png', 
+plt.savefig('./vis/average_attendance_per_month.png', 
             dpi=300, bbox_inches='tight')
 
 
 # 4. plot percentage distribution of sectors as line plot - x-axis sectors, y-axis percentage, events represented by different lines in color
-event_data = pd.read_csv('/data/morrisq/fuc/nucleate_research/attendance_analysis/data/nucleate_column_data.csv', index_col=0)
+event_data = pd.read_csv('./data/nucleate_column_data.csv', index_col=0)
 ## columns are sectors, indexes are events
 ### remove other as a sector
 event_data = event_data.drop(columns=['Other'])
@@ -95,13 +95,13 @@ plt.ylabel('Percentage (%)', fontsize=14)
 plt.xticks(rotation=45)
 plt.legend(title='Events', bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
-plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/percentage_distribution_sectors.png', 
+plt.savefig('./vis/percentage_distribution_sectors.png', 
             dpi=300, bbox_inches='tight')
 
 
 # 5. plot interest form in terms of the number per category
 ### the three columns are Affiliation, Number, Category, the Category is , -delimited string
-interest_form_data = pd.read_csv('/data/morrisq/fuc/nucleate_research/attendance_analysis/data/interest_form.csv')
+interest_form_data = pd.read_csv('./data/interest_form.csv')
 # Explode the Category column to have one category per row
 interest_form_exploded = interest_form_data.assign(
     Category=interest_form_data['Category'].str.split(', ')
@@ -117,6 +117,6 @@ plt.xlabel('Source Category', fontsize=14)
 plt.ylabel('Number of Responses', fontsize=14)
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/interest_form_by_category.png', 
+plt.savefig('./vis/interest_form_by_category.png', 
             dpi=300, bbox_inches='tight')
 
