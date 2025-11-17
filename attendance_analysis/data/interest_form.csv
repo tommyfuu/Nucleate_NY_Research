@@ -1,0 +1,49 @@
+﻿Affiliation,Number,Category
+Academia / University / Research Institute,108,Academia
+Startup (pre-seed to Series A),70,Early-to-growth startup
+Venture Capital / Private Equity Firm,24,VC/equity/Incubator
+Consulting Firm,12,Consulting firm
+"Academia / University / Research Institute, Startup (pre-seed to Series A)",11,"Academia, Early-to-growth startup"
+Accelerator / Incubator / Venture Studio,11,VC/equity/Incubator
+Growth-Stage Biotech / Medtech Company,11,Early-to-growth startup
+Large Biopharma / Multinational Corporation,9,Biotech/pharma companies
+Other,9,Other
+Non-Profit / Foundation / NGO,8,Non-profit
+Contract Research / Development / Manufacturing Organization (CRO / CDMO / CMO),7,Provider
+"Startup (pre-seed to Series A), Academia / University / Research Institute",7,"Academia, Early-to-growth startup"
+Tech Company / Data / AI Provider,7,Provider
+Law Firm,6,Law firm
+"Academia / University / Research Institute, Hospital / Health System / Clinical Site",6,"Academia, Hospital"
+"Startup (pre-seed to Series A), Growth-Stage Biotech / Medtech Company",4,Early-to-growth startup
+"Startup (pre-seed to Series A), Accelerator / Incubator / Venture Studio",3,Early-to-growth startup
+"Academia / University / Research Institute, Non-Profit / Foundation / NGO",3,Academia
+"Startup (pre-seed to Series A), Venture Capital / Private Equity Firm",3,Early-to-growth startup
+"Government Agency / Regulatory Body (e.g., NIH, FDA, BARDA, EMA)",2,Government
+"Venture Capital / Private Equity Firm, Non-Profit / Foundation / NGO",2,VC/equity/Incubator
+"Startup (pre-seed to Series A), Venture Capital / Private Equity Firm, Non-Profit / Foundation / NGO, Tech Company / Data / AI Provider, Independent (Freelancer, Solo Consultant, etc.)",2,Early-to-growth startup
+"Academia / University / Research Institute, Other",2,"Academia, Other"
+"Growth-Stage Biotech / Medtech Company, Tech Company / Data / AI Provider",2,"Early-to-growth startup, Provider"
+"Independent (Freelancer, Solo Consultant, etc.)",2,Consulting firm
+"Startup (pre-seed to Series A), Growth-Stage Biotech / Medtech Company, Large Biopharma / Multinational Corporation",2,"Early-to-growth startup, Biotech/pharma companies"
+"Academia / University / Research Institute, Startup (pre-seed to Series A), Hospital / Health System / Clinical Site",2,"Academia, Hospital"
+"Academia / University / Research Institute, Accelerator / Incubator / Venture Studio",2,"Academia, VC/equity/incubator"
+"Accelerator / Incubator / Venture Studio, Academia / University / Research Institute",2,VC/equity/incubator
+"Academia / University / Research Institute, Startup (pre-seed to Series A), Consulting Firm",1,"Academia, Consulting firm"
+"Accelerator / Incubator / Venture Studio, Venture Capital / Private Equity Firm, Startup (pre-seed to Series A), Academia / University / Research Institute",1,"VC/equity/incubator, Early-to-growth startup"
+"Venture Capital / Private Equity Firm, Startup (pre-seed to Series A)",1,Early-to-growth startup
+"Startup (pre-seed to Series A), Independent (Freelancer, Solo Consultant, etc.)",1,Early-to-growth startup
+"Academia / University / Research Institute, Startup (pre-seed to Series A), Growth-Stage Biotech / Medtech Company, Large Biopharma / Multinational Corporation, Accelerator / Incubator / Venture Studio",1,"Academia, Early-to-growth startup"
+"Startup (pre-seed to Series A), Tech Company / Data / AI Provider",1,"Early-to-growth startup, Provider"
+"Venture Capital / Private Equity Firm, Accelerator / Incubator / Venture Studio",1,VC/equity/Incubator
+"Academia / University / Research Institute, Startup (pre-seed to Series A), Growth-Stage Biotech / Medtech Company, Large Biopharma / Multinational Corporation, Accelerator / Incubator / Venture Studio, Venture Capital / Private Equity Firm, Consulting Firm",1,"Academia, Early-to-growth startup"
+"Academia / University / Research Institute, Accelerator / Incubator / Venture Studio, Venture Capital / Private Equity Firm",1,"Academia, VC/equity/incubator"
+"Large Biopharma / Multinational Corporation, Startup (pre-seed to Series A), Venture Capital / Private Equity Firm",1,"Biotech/pharma companies, VC/equity/incubator"
+"Academia / University / Research Institute, Large Biopharma / Multinational Corporation",1,"Academia, Biotech/pharma companies"
+"Academia / University / Research Institute, Venture Capital / Private Equity Firm, Startup (pre-seed to Series A)",1,"Academia, Biotech/pharma companies, VC/equity/incubator"
+"Growth-Stage Biotech / Medtech Company, Large Biopharma / Multinational Corporation, Contract Research / Development / Manufacturing Organization (CRO / CDMO / CMO)",1,"Early-to-growth startup, Biotech/pharma companies"
+"Growth-Stage Biotech / Medtech Company, Independent (Freelancer, Solo Consultant, etc.)",1,Early-to-growth startup
+"Accelerator / Incubator / Venture Studio, Startup (pre-seed to Series A), Academia / University / Research Institute",1,"Academia, VC/equity/incubator, Early-to-growth startup"
+"Growth-Stage Biotech / Medtech Company, Startup (pre-seed to Series A)",1,Early-to-growth startup
+"Large Biopharma / Multinational Corporation, Accelerator / Incubator / Venture Studio",1,"VC/equity/Incubator, Biotech/pharma companies"
+"Startup (pre-seed to Series A), Growth-Stage Biotech / Medtech Company, Contract Research / Development / Manufacturing Organization (CRO / CDMO / CMO), Accelerator / Incubator / Venture Studio",1,"Provider, Early-to-growth startup, VC/equity/incubator"
+"Consulting Firm, Accelerator / Incubator / Venture Studio",1,"VC/equity/Incubator, Consulting firm"
