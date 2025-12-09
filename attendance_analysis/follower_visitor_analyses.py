@@ -50,6 +50,7 @@ import plotly.graph_objects as go
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
 import time
+## using conda env test_env_dup
 
 # Read the data
 df_location = pd.read_excel(
@@ -63,40 +64,143 @@ print(df_location.head(10))
 print(f"\nShape: {df_location.shape}")
 print(f"\nColumns: {df_location.columns.tolist()}")
 
-# Create a geocoding function with error handling
-def geocode_location(location_name, geolocator, max_retries=3):
-    """Geocode a location with retry logic"""
-    for attempt in range(max_retries):
-        try:
-            time.sleep(1)  # Rate limiting
-            location = geolocator.geocode(location_name, timeout=10)
-            if location:
-                return location.latitude, location.longitude
-            else:
-                return None, None
-        except GeocoderTimedOut:
-            if attempt == max_retries - 1:
-                return None, None
-            time.sleep(2)
-    return None, None
-
-# Initialize geocoder
+# Initialize geocoder (Keep this outside the function)
 geolocator = Nominatim(user_agent="nucleate_location_analysis")
+
+def simplify_location_name(location_name):
+    """
+    Attempts to simplify complex metropolitan area names to a primary city.
+
+    Examples:
+    - "Washington DC-Baltimore Area" -> "Washington DC"
+    - "Miami-Fort Lauderdale Area" -> "Miami"
+    - "Greater Chicago Area" -> "Chicago"
+    - "Athens Metropolitan Area, Greece" -> "Athens, Greece"
+    """
+    # 1. Handle common suffixes and separators
+    # Remove " Area", "Greater ", " Metropolitan"
+    simplified = re.sub(r'(\sArea|\sGreater\s|\sMetropolitan)', '', location_name).strip()
+    
+    # Take the first city in a hyphenated/slashed list (e.g., "Washington DC-Baltimore")
+    simplified = simplified.split('-')[0].split('/')[0].strip()
+
+    # 2. Add country/region context for better accuracy if missing, 
+    # but only for known international cases like "Athens"
+    if simplified == "Athens" and "Greece" not in location_name:
+        return "Athens, Greece"
+        
+    return simplified
+
+def geocode_location(location_name, geolocator, max_retries=3):
+    """
+    Geocode a location with retry logic and a simplification fallback.
+    """
+    # List of names to try, in order of preference
+    location_attempts = [location_name]
+    
+    # Create the simplified name and add it as a fallback if it's different
+    simplified_name = simplify_location_name(location_name)
+    if simplified_name != location_name:
+        location_attempts.append(simplified_name)
+    
+    # Add the specific Boston handling to the most relevant attempt
+    if "Boston" in location_name and "Boston, MA, USA" not in location_attempts:
+         # Prioritize the most specific accurate attempt
+        location_attempts.insert(0, "Boston, MA, USA") 
+
+    for name_to_try in location_attempts:
+        print(f"  Attempting to geocode: **{name_to_try}**")
+        
+        for attempt in range(max_retries):
+            try:
+                time.sleep(1)  # Rate limiting
+                location = geolocator.geocode(name_to_try, timeout=10)
+                
+                if location:
+                    print(f"  ✅ SUCCESS for {location_name} using: {name_to_try}")
+                    return location.latitude, location.longitude
+                else:
+                    # If geocode returns None, break the retry loop for this specific name_to_try 
+                    # and move to the next fallback name (if any)
+                    break 
+            except GeocoderTimedOut:
+                print(f"  ⚠️ Geocoding timed out for {name_to_try}, retrying... (Attempt {attempt + 1})")
+                if attempt == max_retries - 1:
+                    print(f"  ❌ Failed after max retries for {name_to_try}.")
+                    break # Break retry loop, move to next fallback name
+                time.sleep(2)
+            except Exception as e:
+                # Catch other potential Geopy/network errors
+                print(f"  An error occurred for {name_to_try}: {e}")
+                break # Break retry loop, move to next fallback name
+    
+    # If all attempts and fallbacks fail
+    print(f"  ❌ FAILED to find coordinates for: {location_name}")
+    return None, None
 
 # Add coordinates to dataframe
 df_location['latitude'] = None
 df_location['longitude'] = None
 
-# print("\nGeocoding locations...")
-# for idx, row in df_location.iterrows():
-#     location_name = row['Location']
-#     print(f"Processing: {location_name}")
-#     lat, lon = geocode_location(location_name, geolocator)
-#     df_location.at[idx, 'latitude'] = lat
-#     df_location.at[idx, 'longitude'] = lon
+print("\nGeocoding locations...")
+for idx, row in df_location.iterrows():
+    location_name = row['Location']
+    print(f"\nProcessing Original Location: {location_name}")
+    lat, lon = geocode_location(location_name, geolocator)
+    df_location.at[idx, 'latitude'] = lat
+    df_location.at[idx, 'longitude'] = lon
 
 # # Remove rows without coordinates
 # df_map = df_location.dropna(subset=['latitude', 'longitude'])
+
+# for the ones without coordinates, try to geocode again with modified names
+import re
+
+def simplify_location_name(location_name):
+    """
+    Attempts to simplify complex metropolitan area names to a primary city.
+    """
+    # 1. Handle "Boston" edge case first (though it's handled in geocode_location too)
+    if "Boston" in location_name:
+        return "Boston, MA, USA"
+
+    # 2. Remove common descriptive terms aggressively
+    simplified = re.sub(
+        r'(\sThe|\sArea|\sGreater\s|\sMetropolitan|\sRegion|\sMetroplex|\sBay)', 
+        '', 
+        location_name, 
+        flags=re.IGNORECASE
+    ).strip()
+    
+    # 3. Handle duplicate country/region names caused by sheet data
+    # Example: "London, United Kingdom, United Kingdom" -> "London, United Kingdom"
+    parts = [p.strip() for p in simplified.split(',')]
+    if len(parts) >= 3 and parts[-1] == parts[-2]:
+        simplified = ', '.join(parts[:-1])
+        
+    # 4. Take the first city in a hyphenated/slashed list (e.g., "New Bern-Morehead City")
+    simplified = simplified.split('-')[0].split('/')[0].strip()
+
+    # 5. Specific country/region context corrections
+    if simplified.lower() == "athens" and "greece" not in location_name.lower():
+        return "Athens, Greece"
+    elif 'randstad' in simplified.lower():
+        return "Amsterdam, Netherlands"
+    
+    # Example: Greater Terni, Italy -> Terni, Italy
+    if simplified.startswith("Greater "):
+        simplified = simplified.replace("Greater ", "")
+
+    return simplified
+
+df_map = df_location.copy()
+for idx, row in df_map[df_map['latitude'].isna() | df_map['longitude'].isna()].iterrows():
+    location_name = row['Location']
+    print(f"Re-processing: {location_name}")
+    # TODO: revise location_name to make it work
+    lat, lon = geocode_location(simplify_location_name(location_name), geolocator, max_retries=5)
+    df_map.at[idx, 'latitude'] = lat
+    df_map.at[idx, 'longitude'] = lon
 
 # # save the geocoded data for future use
 # df_map.to_csv('/data/morrisq/fuc/nucleate_research/attendance_analysis/data/nucleate_ny_visitor_locations_geocoded_past_365_days.csv', index=False)
@@ -128,6 +232,9 @@ fig1.update_layout(
     height=600,
     title_font_size=16
 )
+# save to html
+fig1.write_html('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/nucleate_ny_visitor_locations_bubble_map.html')
+
 fig1.write_image('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/nucleate_ny_visitor_locations_bubble_map.png', scale=2)
 
 ### analysis 3. Industry tab
