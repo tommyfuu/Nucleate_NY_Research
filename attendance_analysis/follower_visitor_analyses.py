@@ -209,6 +209,13 @@ df_map = pd.read_csv('/data/morrisq/fuc/nucleate_research/attendance_analysis/da
 print(f"\nSuccessfully geocoded: {len(df_map)}/{len(df_location)} locations")
 print(df_map[['Location', 'Total views', 'latitude', 'longitude']])
 
+# sort by 'Total views' descending
+df_map = df_map.sort_values(by='Total views', ascending=False)
+
+# visualize all with over 100 views
+df_map = df_map[df_map['Total views'] >= 100]
+
+
 # Visualization 1: Interactive Bubble Map with Plotly
 fig1 = px.scatter_geo(
     df_map,
@@ -228,6 +235,7 @@ fig1.update_layout(
         landcolor='rgb(243, 243, 243)',
         coastlinecolor='rgb(204, 204, 204)',
         projection_scale=1.5,
+        showframe=False, 
     ),
     height=600,
     title_font_size=16
@@ -236,9 +244,10 @@ fig1.update_layout(
 fig1.write_html('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/nucleate_ny_visitor_locations_bubble_map.html')
 
 fig1.write_image('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/nucleate_ny_visitor_locations_bubble_map.png', scale=2)
-
-### analysis 3. Industry tab
+### analysis 3. Industry tab - PIE CHART VERSION
 import pandas as pd
+import matplotlib.pyplot as plt
+
 df_industry = pd.read_excel(
     '/data/morrisq/fuc/nucleate_research/attendance_analysis/data/nucleate-ny_visitors_past and this cycle past 365 days.xls',
     sheet_name='Industry'
@@ -313,6 +322,7 @@ industry_to_sector = {
     'Transportation, Logistics, Supply Chain and Storage': 'Consumer & Retail',
     'Events Services': 'Consumer & Retail',
     'Marketing Services': 'Consumer & Retail',
+    'Business Content': 'Consumer & Retail',
     
     # EDUCATION, GOVERNMENT & NON-PROFIT
     'Primary and Secondary Education': 'Education, Government & Non-Profit',
@@ -330,11 +340,10 @@ industry_to_sector = {
     'Research Services': 'Education, Government & Non-Profit',
 }
 
-# Apply the mapping to your dataframe
-# Assuming your dataframe has an 'Industry' column
+# Apply the mapping
 df_industry['Sector'] = df_industry['Industry'].map(industry_to_sector)
 
-# Check for any unmapped industries
+# Check for unmapped industries
 unmapped = df_industry[df_industry['Sector'].isna()]['Industry'].unique()
 if len(unmapped) > 0:
     print("Unmapped industries found:")
@@ -346,19 +355,63 @@ else:
 print("\n" + "="*50)
 print("SECTOR DISTRIBUTION")
 print("="*50)
-sector_counts = df_industry['Sector'].value_counts()
+# sector_counts = df_industry['Sector'].value_counts()
+# sector counts should be sum of 'Total views' per sector
+sector_counts = df_industry.groupby('Sector')['Total views'].sum().sort_values(ascending=False)
 print(sector_counts)
+import matplotlib
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
-# Create a visualization
-import matplotlib.pyplot as plt
-plt.figure(figsize=(12, 8))
-sector_counts.plot(kind='bar', color='skyblue')
-plt.title('Visitor Distribution by Sector', fontsize=16)
-plt.xlabel('Sector', fontsize=14)
-plt.ylabel('Number of Visitors', fontsize=14)
-plt.xticks(rotation=45)
+# Create pie chart with transparent background
+fig, ax = plt.subplots(figsize=(14, 10))
+
+# Make figure and axes background transparent
+fig.patch.set_alpha(0.0)
+ax.patch.set_alpha(0.0)
+
+# Color palette inspired by the slide (teal/blue tones with good contrast)
+colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8', '#B8D4DC']
+
+# Create pie chart with labels positioned closer to center (labeldistance controls this)
+wedges, texts = ax.pie(
+    sector_counts.values,
+    labels=sector_counts.index,
+    startangle=90,
+    colors=colors,
+    labeldistance=0.7,  # This positions labels closer to center, overlaying the pie slices
+    textprops={'fontsize': 23, 'color': 'white', 'weight': 'bold'}
+)
+
+# Style the labels - make them bigger, bold, and white for visibility on colored slices
+for text in texts:
+    text.set_fontsize(23)
+    text.set_color('black')
+    text.set_weight('bold')
+    # Add text outline for better readability
+    text.set_path_effects([
+        path_effects.Stroke(linewidth=3, foreground='black', alpha=0.5),
+        path_effects.Normal()
+    ])
+
+# Add title with clean typography
+plt.title('Visitor Distribution by Sector', 
+          fontsize=26, 
+          color='#2C3E50', 
+          pad=25,
+          fontweight='500',
+          family='sans-serif')
+
+# Equal aspect ratio ensures circular pie
+ax.axis('equal')
+
 plt.tight_layout()
-plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/visitor_distribution_by_sector.png', dpi=300, bbox_inches='tight')
+plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/visitor_distribution_by_sector_pie.pdf', 
+            dpi=300, 
+            bbox_inches='tight',
+            transparent=True)
+
+print("\nPie chart with overlaid text saved successfully!")
 
 ### analysis 4. tab Company Size
 # Company size	Total views
@@ -371,20 +424,94 @@ plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followe
 # 5001-10000	505
 # 1001-5000	1037
 # 201-500	490
+### Company Size Analysis - PIE CHART VERSION
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.patheffects as path_effects
 
 df_company_size = pd.read_excel(
     '/data/morrisq/fuc/nucleate_research/attendance_analysis/data/nucleate-ny_visitors_past and this cycle past 365 days.xls',
     sheet_name='Company size'
 )
-# Sort company sizes in a logical order
-size_order = ['1', '2-10', '11-50', '51-200', '201-500', '501-1000', '1001-5000', '5001-10000', '10001+']
-df_company_size['Company size'] = pd.Categorical(df_company_size['Company size'], categories=size_order, ordered=True)
-df_company_size = df_company_size.sort_values('Company size')
-plt.figure(figsize=(12, 8))
-plt.bar(df_company_size['Company size'], df_company_size['Total views'], color='lightgreen')
-plt.title('Visitor Distribution by Company Size', fontsize=16)
-plt.xlabel('Company Size', fontsize=14)
-plt.ylabel('Total Views', fontsize=14)
-plt.xticks(rotation=45)
+
+# Define size groupings
+def group_company_size(size):
+    if size in ['1', '2-10']:
+        return '1-10'
+    elif size in ['11-50', '51-200']:
+        return '11-200'
+    elif size in ['201-500', '501-1000']:
+        return '201-1000'
+    elif size in ['1001-5000', '5001-10000']:
+        return '1001-10000'
+    elif size == '10001+':
+        return '10001+'
+    else:
+        return size
+
+# Apply grouping
+df_company_size['Size Group'] = df_company_size['Company size'].apply(group_company_size)
+
+# Group by size and sum total views
+size_counts = df_company_size.groupby('Size Group')['Total views'].sum()
+
+# Define logical order for grouped sizes
+group_order = ['1-10', '11-200', '201-1000', '1001-10000', '10001+']
+size_counts = size_counts.reindex(group_order)
+
+# Display distribution
+print("\n" + "="*50)
+print("COMPANY SIZE DISTRIBUTION")
+print("="*50)
+print(size_counts)
+
+# Create pie chart with transparent background
+fig, ax = plt.subplots(figsize=(14, 10))
+
+# Make figure and axes background transparent
+fig.patch.set_alpha(0.0)
+ax.patch.set_alpha(0.0)
+
+# Color palette - complementary greens/teals to match aesthetic
+colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8']
+
+# Create pie chart with labels positioned closer to center
+wedges, texts = ax.pie(
+    size_counts.values,
+    labels=size_counts.index,
+    startangle=90,
+    colors=colors,
+    labeldistance=0.6,  # Position labels to overlay the pie slices
+    textprops={'fontsize': 23, 'color': 'white', 'weight': 'bold'}
+)
+
+# Style the labels - big, bold, white text with outline
+for text in texts:
+    text.set_fontsize(23)
+    text.set_color('black')
+    text.set_weight('bold')
+    # Add text outline for better readability
+    text.set_path_effects([
+        path_effects.Stroke(linewidth=3, foreground='black', alpha=0.5),
+        path_effects.Normal()
+    ])
+
+# Add title with clean typography
+plt.title('Visitor Distribution by Company Size', 
+          fontsize=26, 
+          color='#2C3E50', 
+          pad=25,
+          fontweight='500',
+          family='sans-serif')
+
+# Equal aspect ratio ensures circular pie
+ax.axis('equal')
+
 plt.tight_layout()
-plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/visitor_distribution_by_company_size.png', dpi=300, bbox_inches='tight')
+plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/visitor_distribution_by_company_size_pie.png', 
+            dpi=300, 
+            bbox_inches='tight',
+            transparent=True)
+plt.show()
+
+print("\nPie chart with company size distribution saved successfully!")
