@@ -515,3 +515,341 @@ plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followe
 plt.show()
 
 print("\nPie chart with company size distribution saved successfully!")
+
+### analysis 5. Job Function Analysis - PIE CHART VERSION
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.patheffects as path_effects
+
+df_job_function = pd.read_excel(
+    '/data/morrisq/fuc/nucleate_research/attendance_analysis/data/nucleate-ny_visitors_past and this cycle past 365 days.xls',
+    sheet_name='Job function'
+)
+
+# Get job function counts
+job_counts = df_job_function.set_index('Job function')['Total views']
+
+# Sort by total views in descending order
+job_counts = job_counts.sort_values(ascending=False)
+
+# Optional: Group smaller categories into "Other" to avoid cluttered chart
+# Uncomment the following lines if you want to group categories with fewer views
+threshold = 200  # Categories with fewer than 200 views will be grouped as "Other"
+job_counts_filtered = job_counts[job_counts >= threshold]
+other_sum = job_counts[job_counts < threshold].sum()
+if other_sum > 0:
+    job_counts_filtered['Other'] = other_sum
+    job_counts = job_counts_filtered
+
+# Display distribution
+print("\n" + "="*50)
+print("JOB FUNCTION DISTRIBUTION")
+print("="*50)
+print(job_counts)
+
+# Create pie chart with transparent background
+fig, ax = plt.subplots(figsize=(16, 12))
+
+# Make figure and axes background transparent
+fig.patch.set_alpha(0.0)
+ax.patch.set_alpha(0.0)
+
+# Color palette - expanded to accommodate more categories
+colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8',
+          '#5A8C9C', '#7BB5C8', '#9FD5E4', '#B8E5F2', '#8CAFA8',
+          '#6A9CAC', '#8BC5D8', '#AFC5D4', '#C8D5E2', '#9CBFA8']
+
+# Create pie chart with percentage labels
+wedges, texts, autotexts = ax.pie(
+    job_counts.values,
+    labels=job_counts.index,
+    autopct='%1.1f%%',
+    startangle=90,
+    colors=colors[:len(job_counts)],
+    labeldistance=1.15,
+    pctdistance=0.85,
+    textprops={'fontsize': 11, 'weight': 'bold'}
+)
+
+# Style the category labels
+for text in texts:
+    text.set_fontsize(11)
+    text.set_color('#2C3E50')
+    text.set_weight('bold')
+
+# Style the percentage labels - white text with outline
+for autotext in autotexts:
+    autotext.set_color('white')
+    autotext.set_fontsize(10)
+    autotext.set_weight('bold')
+    autotext.set_path_effects([
+        path_effects.Stroke(linewidth=2, foreground='black', alpha=0.5),
+        path_effects.Normal()
+    ])
+
+# Add title with clean typography
+plt.title('Visitor Distribution by Job Function', 
+          fontsize=26, 
+          color='#2C3E50', 
+          pad=25,
+          fontweight='500',
+          family='sans-serif')
+
+# Equal aspect ratio ensures circular pie
+ax.axis('equal')
+
+plt.tight_layout()
+plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/visitor_distribution_by_job_function_pie.png', 
+            dpi=300, 
+            bbox_inches='tight',
+            transparent=True)
+plt.show()
+
+### analysis 5. Job Function Analysis - PIE CHART VERSION
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.patheffects as path_effects
+
+df_job_function = pd.read_excel(
+    '/data/morrisq/fuc/nucleate_research/attendance_analysis/data/nucleate-ny_visitors_past and this cycle past 365 days.xls',
+    sheet_name='Job function'
+)
+
+# Get job function counts
+job_counts = df_job_function.set_index('Job function')['Total views']
+
+# Sort by total views in descending order
+job_counts = job_counts.sort_values(ascending=False)
+
+# Optional: Group smaller categories into "Other" to avoid cluttered chart
+# Uncomment the following lines if you want to group categories with fewer views
+threshold = 200  # Categories with fewer than 200 views will be grouped as "Other"
+job_counts_filtered = job_counts[job_counts >= threshold]
+other_sum = job_counts[job_counts < threshold].sum()
+if other_sum > 0:
+    job_counts_filtered['Other'] = other_sum
+    job_counts = job_counts_filtered
+
+# Display distribution
+print("\n" + "="*50)
+print("JOB FUNCTION DISTRIBUTION")
+print("="*50)
+print(job_counts)
+
+# Create pie chart with transparent background
+fig, ax = plt.subplots(figsize=(16, 12))
+
+# Make figure and axes background transparent
+fig.patch.set_alpha(0.0)
+ax.patch.set_alpha(0.0)
+
+# Color palette - expanded to accommodate more categories
+colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8',
+          '#5A8C9C', '#7BB5C8', '#9FD5E4', '#B8E5F2', '#8CAFA8',
+          '#6A9CAC', '#8BC5D8', '#AFC5D4', '#C8D5E2', '#9CBFA8']
+
+# Create pie chart with labels positioned closer to center
+wedges, texts = ax.pie(
+    job_counts.values,
+    labels=job_counts.index,
+    startangle=90,
+    colors=colors[:len(job_counts)],
+    labeldistance=0.75,  # Position labels to overlay the pie slices
+    textprops={'fontsize': 14, 'color': 'white', 'weight': 'bold'}
+)
+
+# Style the labels - white text with black outline for readability
+for text in texts:
+    text.set_fontsize(22)
+    text.set_color('black')
+    text.set_weight('bold')
+    # Add text outline for better readability
+    text.set_path_effects([
+        path_effects.Stroke(linewidth=3, foreground='black', alpha=0.5),
+        path_effects.Normal()
+    ])
+
+# Add title with clean typography
+plt.title('Visitor Distribution by Job Function', 
+          fontsize=30, 
+          color='#2C3E50', 
+          pad=25,
+          fontweight='500',
+          family='sans-serif')
+
+# Equal aspect ratio ensures circular pie
+ax.axis('equal')
+
+plt.tight_layout()
+plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/visitor_distribution_by_job_function_pie.png', 
+            dpi=300, 
+            bbox_inches='tight',
+            transparent=True)
+plt.show()
+
+print("\nPie chart with job function distribution saved successfully!")
+
+
+### Event Attendance Analysis - PIE CHART VERSION
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.patheffects as path_effects
+
+# Load event data
+event_data = pd.read_csv('./data/nucleate_column_data.csv', index_col=0)
+
+# Aggregate attendance across all events by category
+category_totals = event_data.sum(axis=0).sort_values(ascending=False)
+
+# Display distribution
+print("\n" + "="*50)
+print("AGGREGATED EVENT ATTENDANCE BY CATEGORY")
+print("="*50)
+print(category_totals)
+print(f"\nTotal Attendees: {category_totals.sum()}")
+
+# Create pie chart with transparent background
+fig, ax = plt.subplots(figsize=(16, 12))
+
+# Make figure and axes background transparent
+fig.patch.set_alpha(0.0)
+ax.patch.set_alpha(0.0)
+
+# Color palette - matching the aesthetic
+colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8',
+          '#5A8C9C', '#7BB5C8', '#9FD5E4']
+
+# Create pie chart with labels positioned on the slices
+wedges, texts = ax.pie(
+    category_totals.values,
+    labels=category_totals.index,
+    startangle=90,
+    colors=colors[:len(category_totals)],
+    labeldistance=0.75,  # Position labels to overlay the pie slices
+    textprops={'fontsize': 16, 'color': 'white', 'weight': 'bold'}
+)
+
+# Style the labels - white text with black outline for readability
+for text in texts:
+    text.set_fontsize(30)
+    text.set_color('black')
+    text.set_weight('bold')
+    # Add text outline for better readability
+    text.set_path_effects([
+        path_effects.Stroke(linewidth=3, foreground='black', alpha=0.5),
+        path_effects.Normal()
+    ])
+
+# Add title with clean typography
+plt.title('Aggregated Event Attendance by Category', 
+          fontsize=26, 
+          color='#2C3E50', 
+          pad=25,
+          fontweight='500',
+          family='sans-serif')
+
+# Equal aspect ratio ensures circular pie
+ax.axis('equal')
+
+plt.tight_layout()
+plt.savefig('./vis/aggregated_event_attendance_by_category_pie.pdf', 
+            dpi=300, 
+            bbox_inches='tight',
+            transparent=True)
+plt.show()
+
+print("\nPie chart with aggregated event attendance saved successfully!")
+
+
+### Partnership Data Analysis - PIE CHART VERSION
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.patheffects as path_effects
+
+# Load partnership data
+partnership_data = pd.read_csv('/data/morrisq/fuc/nucleate_research/attendance_analysis/data/interest_form.csv')
+# Initialize a dictionary to store category counts
+category_counts = {}
+
+# Process each row, splitting categories that are comma-separated
+for _, row in partnership_data.iterrows():
+    categories = [cat.strip() for cat in row['Category'].split(',')]
+    number = row['Number']
+    
+    # Distribute the count across all categories for this affiliation
+    for category in categories:
+        if category in category_counts:
+            category_counts[category] += number
+        else:
+            category_counts[category] = number
+
+# Convert to Series and sort
+category_totals = pd.Series(category_counts).sort_values(ascending=False)
+
+# Group smaller categories into "Other"
+threshold = 15  # Categories with fewer than 15 partners will be grouped as "Other"
+category_filtered = category_totals[category_totals >= threshold]
+other_sum = category_totals[category_totals < threshold].sum()
+if other_sum > 0:
+    category_filtered['Other'] = other_sum
+category_totals = category_filtered
+
+# Display distribution
+print("\n" + "="*50)
+print("PARTNERSHIP DISTRIBUTION BY CATEGORY")
+print("(Each person counted in all their categories)")
+print("="*50)
+print(category_totals)
+print(f"\nTotal Count (with overlap): {category_totals.sum()}")
+
+# Create pie chart with transparent background
+fig, ax = plt.subplots(figsize=(16, 12))
+
+# Make figure and axes background transparent
+fig.patch.set_alpha(0.0)
+ax.patch.set_alpha(0.0)
+
+# Color palette - matching the aesthetic
+colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8',
+          '#5A8C9C', '#7BB5C8', '#9FD5E4', '#B8E5F2', '#8CAFA8']
+
+# Create pie chart with labels positioned on the slices
+wedges, texts = ax.pie(
+    category_totals.values,
+    labels=category_totals.index,
+    startangle=90,
+    colors=colors[:len(category_totals)],
+    labeldistance=0.75,  # Position labels to overlay the pie slices
+    textprops={'fontsize': 16, 'color': 'white', 'weight': 'bold'}
+)
+
+# Style the labels - white text with black outline for readability
+for text in texts:
+    text.set_fontsize(24)
+    text.set_color('black')
+    text.set_weight('bold')
+    # Add text outline for better readability
+    text.set_path_effects([
+        path_effects.Stroke(linewidth=3, foreground='black', alpha=0.5),
+        path_effects.Normal()
+    ])
+
+# Add title with clean typography
+plt.title('Partnership Distribution by Category', 
+          fontsize=32, 
+          color='#2C3E50', 
+          pad=25,
+          fontweight='500',
+          family='sans-serif')
+
+# Equal aspect ratio ensures circular pie
+ax.axis('equal')
+
+plt.tight_layout()
+plt.savefig('./vis/partnership_distribution_by_category_pie.pdf', 
+            dpi=300, 
+            bbox_inches='tight',
+            transparent=True)
+plt.show()
+
+print("\nPie chart with partnership distribution saved successfully!")
