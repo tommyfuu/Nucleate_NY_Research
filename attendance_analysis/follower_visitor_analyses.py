@@ -363,72 +363,69 @@ import matplotlib
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 
-# Create pie chart with transparent background
+# --- NUCLEATE BRANDING THEME ---
+# Colors extracted from the provided image
+nucleate_colors = [
+    '#9DBDD8', # Light Blue (New to Nucleate)
+    '#0F054C', # Dark Navy (Alumni)
+    '#3B298B', # Deep Purple (Sponsor)
+    '#8E85D6', # Mid Purple (Activator)
+    '#C4C7F9', # Lavender (Leadership)
+    '#ACF9E5', # Pale Teal (Expert/Mentor)
+    '#62D0AC', # Mint (Other)
+    '#3E8A81'  # Dark Teal (Speaker)
+]
+
+# Create figure
 fig, ax = plt.subplots(figsize=(14, 10))
-
-# Make figure and axes background transparent
 fig.patch.set_alpha(0.0)
-ax.patch.set_alpha(0.0)
 
-# Color palette inspired by the slide (teal/blue tones with good contrast)
-colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8', '#B8D4DC']
-
-# Create pie chart with labels positioned closer to center (labeldistance controls this)
-wedges, texts = ax.pie(
+# Create the donut chart
+# 'pctdistance' moves the percentage labels inside the ring
+wedges, texts, autotexts = ax.pie(
     sector_counts.values,
-    labels=sector_counts.index,
+    autopct='%1.1f%%',
     startangle=90,
-    colors=colors,
-    labeldistance=0.7,  # This positions labels closer to center, overlaying the pie slices
-    textprops={'fontsize': 23, 'color': 'white', 'weight': 'bold'}
+    colors=nucleate_colors[:len(sector_counts)],
+    pctdistance=0.85, 
+    wedgeprops={'width': 0.4, 'edgecolor': 'none'} # 'width' creates the donut hole
 )
 
-# Style the labels - make them bigger, bold, and white for visibility on colored slices
-for text in texts:
-    text.set_fontsize(23)
-    text.set_color('black')
-    text.set_weight('bold')
-    # Add text outline for better readability
-    text.set_path_effects([
-        path_effects.Stroke(linewidth=3, foreground='black', alpha=0.5),
-        path_effects.Normal()
-    ])
+# Style the percentage labels (the white numbers inside the slices)
+plt.setp(autotexts, size=14, weight="bold", color="white")
 
-# Add title with clean typography
+# Add the Legend to the right (matching the image layout)
+ax.legend(
+    wedges, 
+    sector_counts.index,
+    title="Sectors",
+    loc="center left",
+    bbox_to_anchor=(1, 0, 0.5, 1),
+    fontsize=14,
+    frameon=False
+)
+
+# Set equal aspect ratio to ensure it's a circle
+ax.axis('equal')  
+
 plt.title('Visitor Distribution by Sector', 
-          fontsize=26, 
-          color='#2C3E50', 
-          pad=25,
-          fontweight='500',
-          family='sans-serif')
-
-# Equal aspect ratio ensures circular pie
-ax.axis('equal')
+          fontsize=24, 
+          color='#000000', 
+          pad=20,
+          fontweight='bold')
 
 plt.tight_layout()
-plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/visitor_distribution_by_sector_pie.pdf', 
-            dpi=300, 
-            bbox_inches='tight',
-            transparent=True)
 
-print("\nPie chart with overlaid text saved successfully!")
+# Save the file
+output_path = '/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/final_figs/fig1_visitor_distribution_by_sector_donut.pdf'
+plt.savefig(output_path, dpi=300, bbox_inches='tight', transparent=True)
 
-### analysis 4. tab Company Size
-# Company size	Total views
-# 1	89
-# 2-10	955
-# 10001+	2199
-# 501-1000	402
-# 11-50	1130
-# 51-200	794
-# 5001-10000	505
-# 1001-5000	1037
-# 201-500	490
-### Company Size Analysis - PIE CHART VERSION
+print(f"\nDonut chart styled like Nucleate branding saved to: {output_path}")
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as path_effects
 
+# Load data
 df_company_size = pd.read_excel(
     '/data/morrisq/fuc/nucleate_research/attendance_analysis/data/nucleate-ny_visitors_past and this cycle past 365 days.xls',
     sheet_name='Company size'
@@ -459,324 +456,290 @@ size_counts = df_company_size.groupby('Size Group')['Total views'].sum()
 group_order = ['1-10', '11-200', '201-1000', '1001-10000', '10001+']
 size_counts = size_counts.reindex(group_order)
 
-# Display distribution
-print("\n" + "="*50)
-print("COMPANY SIZE DISTRIBUTION")
-print("="*50)
-print(size_counts)
+# Calculate total for the center label
+total_views = size_counts.sum()
 
-# Create pie chart with transparent background
+# --- NUCLEATE BRANDING THEME ---
+nucleate_colors = [
+    '#9DBDD8', # Light Blue
+    '#0F054C', # Dark Navy
+    '#3B298B', # Deep Purple
+    '#8E85D6', # Mid Purple
+    '#C4C7F9', # Lavender
+]
+
+# Create figure
 fig, ax = plt.subplots(figsize=(14, 10))
-
-# Make figure and axes background transparent
 fig.patch.set_alpha(0.0)
 ax.patch.set_alpha(0.0)
 
-# Color palette - complementary greens/teals to match aesthetic
-colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8']
-
-# Create pie chart with labels positioned closer to center
-wedges, texts = ax.pie(
-    size_counts.values,
-    labels=size_counts.index,
-    startangle=90,
-    colors=colors,
-    labeldistance=0.6,  # Position labels to overlay the pie slices
-    textprops={'fontsize': 23, 'color': 'white', 'weight': 'bold'}
-)
-
-# Style the labels - big, bold, white text with outline
-for text in texts:
-    text.set_fontsize(23)
-    text.set_color('black')
-    text.set_weight('bold')
-    # Add text outline for better readability
-    text.set_path_effects([
-        path_effects.Stroke(linewidth=3, foreground='black', alpha=0.5),
-        path_effects.Normal()
-    ])
-
-# Add title with clean typography
-plt.title('Visitor Distribution by Company Size', 
-          fontsize=26, 
-          color='#2C3E50', 
-          pad=25,
-          fontweight='500',
-          family='sans-serif')
-
-# Equal aspect ratio ensures circular pie
-ax.axis('equal')
-
-plt.tight_layout()
-plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/visitor_distribution_by_company_size_pie.png', 
-            dpi=300, 
-            bbox_inches='tight',
-            transparent=True)
-plt.show()
-
-print("\nPie chart with company size distribution saved successfully!")
-
-### analysis 5. Job Function Analysis - PIE CHART VERSION
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.patheffects as path_effects
-
-df_job_function = pd.read_excel(
-    '/data/morrisq/fuc/nucleate_research/attendance_analysis/data/nucleate-ny_visitors_past and this cycle past 365 days.xls',
-    sheet_name='Job function'
-)
-
-# Get job function counts
-job_counts = df_job_function.set_index('Job function')['Total views']
-
-# Sort by total views in descending order
-job_counts = job_counts.sort_values(ascending=False)
-
-# Optional: Group smaller categories into "Other" to avoid cluttered chart
-# Uncomment the following lines if you want to group categories with fewer views
-threshold = 200  # Categories with fewer than 200 views will be grouped as "Other"
-job_counts_filtered = job_counts[job_counts >= threshold]
-other_sum = job_counts[job_counts < threshold].sum()
-if other_sum > 0:
-    job_counts_filtered['Other'] = other_sum
-    job_counts = job_counts_filtered
-
-# Display distribution
-print("\n" + "="*50)
-print("JOB FUNCTION DISTRIBUTION")
-print("="*50)
-print(job_counts)
-
-# Create pie chart with transparent background
-fig, ax = plt.subplots(figsize=(16, 12))
-
-# Make figure and axes background transparent
-fig.patch.set_alpha(0.0)
-ax.patch.set_alpha(0.0)
-
-# Color palette - expanded to accommodate more categories
-colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8',
-          '#5A8C9C', '#7BB5C8', '#9FD5E4', '#B8E5F2', '#8CAFA8',
-          '#6A9CAC', '#8BC5D8', '#AFC5D4', '#C8D5E2', '#9CBFA8']
-
-# Create pie chart with percentage labels
+# Create the donut chart
 wedges, texts, autotexts = ax.pie(
-    job_counts.values,
-    labels=job_counts.index,
+    size_counts.values,
     autopct='%1.1f%%',
     startangle=90,
-    colors=colors[:len(job_counts)],
-    labeldistance=1.15,
-    pctdistance=0.85,
-    textprops={'fontsize': 11, 'weight': 'bold'}
+    colors=nucleate_colors,
+    pctdistance=0.82, 
+    wedgeprops={'width': 0.4, 'edgecolor': 'none'} # Width of the donut ring
 )
 
-# Style the category labels
-for text in texts:
-    text.set_fontsize(11)
-    text.set_color('#2C3E50')
-    text.set_weight('bold')
+# Style the percentage labels inside the rings
+plt.setp(autotexts, size=15, weight="bold", color="white")
 
-# Style the percentage labels - white text with outline
-for autotext in autotexts:
-    autotext.set_color('white')
-    autotext.set_fontsize(10)
-    autotext.set_weight('bold')
-    autotext.set_path_effects([
-        path_effects.Stroke(linewidth=2, foreground='black', alpha=0.5),
-        path_effects.Normal()
-    ])
+# Add the Total Views in the center (matching the "467 Attendees" style)
+ax.text(0, 0, f'{total_views:,}\nTOTAL VIEWS', 
+        ha='center', va='center', 
+        fontsize=22, fontweight='bold', 
+        color='#000000', family='sans-serif')
 
-# Add title with clean typography
-plt.title('Visitor Distribution by Job Function', 
+# Add Legend to the right
+ax.legend(
+    wedges, 
+    size_counts.index,
+    title="Company Size (Employees)",
+    loc="center left",
+    bbox_to_anchor=(1, 0, 0.5, 1),
+    fontsize=14,
+    frameon=False
+)
+
+# Title and formatting
+plt.title('Visitor Distribution by Company Size', 
           fontsize=26, 
-          color='#2C3E50', 
-          pad=25,
-          fontweight='500',
-          family='sans-serif')
+          color='#000000', 
+          pad=30,
+          fontweight='bold')
 
-# Equal aspect ratio ensures circular pie
 ax.axis('equal')
-
 plt.tight_layout()
-plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/visitor_distribution_by_job_function_pie.png', 
-            dpi=300, 
-            bbox_inches='tight',
-            transparent=True)
-plt.show()
 
-### analysis 5. Job Function Analysis - PIE CHART VERSION
+# Save the file
+output_path = '/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/final_figs/fig2_visitor_distribution_by_company_size_donut.pdf'
+plt.savefig(output_path, dpi=300, bbox_inches='tight', transparent=True)
+
+print(f"\nDonut chart with company size distribution saved to: {output_path}")
+
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.patheffects as path_effects
 
+# Load the data
 df_job_function = pd.read_excel(
     '/data/morrisq/fuc/nucleate_research/attendance_analysis/data/nucleate-ny_visitors_past and this cycle past 365 days.xls',
     sheet_name='Job function'
 )
 
-# Get job function counts
-job_counts = df_job_function.set_index('Job function')['Total views']
+# --- SMART MAPPING DICTIONARY ---
+job_map = {
+    # Request: Investors, VC, & Consulting
+    'Consulting': 'Investors, VC, & Consulting',
+    'Operations': 'Investors, VC, & Consulting',
+    'Entrepreneurship': 'Investors, VC, & Consulting',
+    'Finance': 'Investors, VC, & Consulting',
+    'Administrative': 'Investors, VC, & Consulting',
+    
+    # Request: Marketing, Media, & Outreach
+    'Sales': 'Marketing, Media, & Outreach',
+    'Marketing': 'Marketing, Media, & Outreach',
+    'Arts and Design': 'Marketing, Media, & Outreach',
+    'Media and Communication': 'Marketing, Media, & Outreach',
+    'Community and Social Services': 'Marketing, Media, & Outreach',
+    
+    # Smart Grouping: Product & Tech
+    'Engineering': 'Product & Engineering',
+    'Information Technology': 'Product & Engineering',
+    'Quality Assurance': 'Product & Engineering',
+    'Product Management': 'Product & Engineering',
+    'Healthcare Services': 'Product & Engineering',  # Some healthcare roles are very product/tech-focused (e.g., digital health)
+    
+    # Legal & Management
+    'Legal': 'Legal & Project Mgmt',
+    'Program and Project Management': 'Legal & Project Mgmt',
+    'Human Resources': 'Legal & Project Mgmt',
+    
+    # High-impact categories stay distinct
+    'Research': 'Research',
+    'Business Development': 'Business Development',
+    'Education': 'Education'
+}
 
-# Sort by total views in descending order
-job_counts = job_counts.sort_values(ascending=False)
+# Apply mapping
+df_job_function['Mapped Function'] = df_job_function['Job function'].map(job_map)
 
-# Optional: Group smaller categories into "Other" to avoid cluttered chart
-# Uncomment the following lines if you want to group categories with fewer views
-threshold = 200  # Categories with fewer than 200 views will be grouped as "Other"
-job_counts_filtered = job_counts[job_counts >= threshold]
-other_sum = job_counts[job_counts < threshold].sum()
-if other_sum > 0:
-    job_counts_filtered['Other'] = other_sum
-    job_counts = job_counts_filtered
+# Group by the new mapping and sum views
+job_counts = df_job_function.groupby('Mapped Function')['Total views'].sum().sort_values(ascending=False)
 
-# Display distribution
-print("\n" + "="*50)
-print("JOB FUNCTION DISTRIBUTION")
-print("="*50)
-print(job_counts)
+# Calculate total for center label
+total_views = job_counts.sum()
 
-# Create pie chart with transparent background
-fig, ax = plt.subplots(figsize=(16, 12))
+# --- NUCLEATE BRANDING THEME ---
+nucleate_colors = [
+    '#0F054C', # Dark Navy
+    '#3B298B', # Deep Purple
+    '#8E85D6', # Mid Purple
+    '#9DBDD8', # Light Blue
+    '#C4C7F9', # Lavender
+    '#3E8A81', # Dark Teal
+    '#62D0AC', # Mint
+    '#ACF9E5', # Pale Teal
+]
 
-# Make figure and axes background transparent
+# Create figure
+fig, ax = plt.subplots(figsize=(14, 10))
 fig.patch.set_alpha(0.0)
-ax.patch.set_alpha(0.0)
 
-# Color palette - expanded to accommodate more categories
-colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8',
-          '#5A8C9C', '#7BB5C8', '#9FD5E4', '#B8E5F2', '#8CAFA8',
-          '#6A9CAC', '#8BC5D8', '#AFC5D4', '#C8D5E2', '#9CBFA8']
-
-# Create pie chart with labels positioned closer to center
-wedges, texts = ax.pie(
+# Create Donut Chart
+wedges, texts, autotexts = ax.pie(
     job_counts.values,
-    labels=job_counts.index,
-    startangle=90,
-    colors=colors[:len(job_counts)],
-    labeldistance=0.75,  # Position labels to overlay the pie slices
-    textprops={'fontsize': 14, 'color': 'white', 'weight': 'bold'}
+    autopct='%1.1f%%',
+    startangle=140, # Rotated for better aesthetic balance
+    colors=nucleate_colors,
+    pctdistance=0.82,
+    wedgeprops={'width': 0.4, 'edgecolor': 'none'}
 )
 
-# Style the labels - white text with black outline for readability
-for text in texts:
-    text.set_fontsize(22)
-    text.set_color('black')
-    text.set_weight('bold')
-    # Add text outline for better readability
-    text.set_path_effects([
-        path_effects.Stroke(linewidth=3, foreground='black', alpha=0.5),
-        path_effects.Normal()
-    ])
+# Style internal percentage labels
+plt.setp(autotexts, size=12, weight="bold", color="white")
 
-# Add title with clean typography
+# Center Text (Nucleate Style)
+ax.text(0, 0, f'{total_views:,}\nTOTAL VIEWS', 
+        ha='center', va='center', 
+        fontsize=20, fontweight='bold', 
+        color='#000000')
+
+# Legend on the right
+ax.legend(
+    wedges, 
+    job_counts.index,
+    title="Job Functions",
+    loc="center left",
+    bbox_to_anchor=(1, 0, 0.5, 1),
+    fontsize=12,
+    frameon=False
+)
+
 plt.title('Visitor Distribution by Job Function', 
-          fontsize=30, 
-          color='#2C3E50', 
-          pad=25,
-          fontweight='500',
-          family='sans-serif')
+          fontsize=26, 
+          color='#000000', 
+          pad=30,
+          fontweight='bold')
 
-# Equal aspect ratio ensures circular pie
 ax.axis('equal')
-
 plt.tight_layout()
-plt.savefig('/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/followers_visitors/visitor_distribution_by_job_function_pie.png', 
-            dpi=300, 
-            bbox_inches='tight',
-            transparent=True)
-plt.show()
 
-print("\nPie chart with job function distribution saved successfully!")
+# Save
+output_path = '/data/morrisq/fuc/nucleate_research/attendance_analysis/vis/final_figs/fig3_visitor_distribution_by_job_function_donut.pdf'
+plt.savefig(output_path, dpi=300, bbox_inches='tight', transparent=True)
+
+print(f"Mapped Job Function chart saved to: {output_path}")
+
 
 
 ### Event Attendance Analysis - PIE CHART VERSION
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.patheffects as path_effects
 
 # Load event data
 event_data = pd.read_csv('./data/nucleate_column_data.csv', index_col=0)
 
-# Aggregate attendance across all events by category
-category_totals = event_data.sum(axis=0).sort_values(ascending=False)
+# 1. AGGREGATE AND CONSOLIDATE CATEGORIES
+category_totals = event_data.sum(axis=0)
 
-# Display distribution
-print("\n" + "="*50)
-print("AGGREGATED EVENT ATTENDANCE BY CATEGORY")
-print("="*50)
-print(category_totals)
-print(f"\nTotal Attendees: {category_totals.sum()}")
+# Define the consolidation mapping
+# We combine HealthTech, Software, Tools & Reagents, and CRO-CDMO into Biotech / Pharma
+consolidation_map = {
+    'HealthTech / Software': 'Biotech / Pharma',
+    'Tools & Reagents / CRO-CDMO': 'Biotech / Pharma',
+}
 
-# Create pie chart with transparent background
-fig, ax = plt.subplots(figsize=(16, 12))
+# Group the series by the map (keep original name if not in map)
+category_totals = category_totals.groupby(lambda x: consolidation_map.get(x, x)).sum()
+category_totals = category_totals.sort_values(ascending=False)
 
-# Make figure and axes background transparent
+# Calculate grand total for center label
+grand_total = category_totals.sum()
+
+# --- 2. NUCLEATE BRANDING THEME ---
+nucleate_colors = [
+    '#0F054C', # Dark Navy
+    '#3B298B', # Deep Purple
+    '#8E85D6', # Mid Purple
+    '#9DBDD8', # Light Blue
+    '#C4C7F9', # Lavender
+    '#3E8A81', # Dark Teal
+    '#62D0AC', # Mint
+    '#ACF9E5'  # Pale Teal
+]
+
+# Create figure
+fig, ax = plt.subplots(figsize=(14, 10))
 fig.patch.set_alpha(0.0)
 ax.patch.set_alpha(0.0)
 
-# Color palette - matching the aesthetic
-colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8',
-          '#5A8C9C', '#7BB5C8', '#9FD5E4']
-
-# Create pie chart with labels positioned on the slices
-wedges, texts = ax.pie(
+# --- 3. CREATE DONUT CHART ---
+wedges, texts, autotexts = ax.pie(
     category_totals.values,
-    labels=category_totals.index,
+    autopct='%1.1f%%',
     startangle=90,
-    colors=colors[:len(category_totals)],
-    labeldistance=0.75,  # Position labels to overlay the pie slices
-    textprops={'fontsize': 16, 'color': 'white', 'weight': 'bold'}
+    colors=nucleate_colors[:len(category_totals)],
+    pctdistance=0.82, 
+    wedgeprops={'width': 0.4, 'edgecolor': 'none'}
 )
 
-# Style the labels - white text with black outline for readability
-for text in texts:
-    text.set_fontsize(30)
-    text.set_color('black')
-    text.set_weight('bold')
-    # Add text outline for better readability
-    text.set_path_effects([
-        path_effects.Stroke(linewidth=3, foreground='black', alpha=0.5),
-        path_effects.Normal()
-    ])
+# Style internal percentage labels
+plt.setp(autotexts, size=14, weight="bold", color="white")
 
-# Add title with clean typography
+# Center Text (Nucleate Style)
+ax.text(0, 0, f'{grand_total:,}\nTOTAL\nATTENDEES', 
+        ha='center', va='center', 
+        fontsize=22, fontweight='bold', 
+        color='#000000', family='sans-serif')
+
+# Legend on the right
+ax.legend(
+    wedges, 
+    category_totals.index,
+    title="Attendee Categories",
+    loc="center left",
+    bbox_to_anchor=(1, 0, 0.5, 1),
+    fontsize=13,
+    frameon=False
+)
+
+# Add title
 plt.title('Aggregated Event Attendance by Category', 
           fontsize=26, 
-          color='#2C3E50', 
-          pad=25,
-          fontweight='500',
-          family='sans-serif')
+          color='#000000', 
+          pad=30,
+          fontweight='bold')
 
-# Equal aspect ratio ensures circular pie
 ax.axis('equal')
-
 plt.tight_layout()
-plt.savefig('./vis/aggregated_event_attendance_by_category_pie.pdf', 
-            dpi=300, 
-            bbox_inches='tight',
-            transparent=True)
+
+# Save output
+output_path = './vis/final_figs/fig4_aggregated_event_attendance_consolidated_donut.pdf'
+plt.savefig(output_path, dpi=300, bbox_inches='tight', transparent=True)
 plt.show()
 
-print("\nPie chart with aggregated event attendance saved successfully!")
+print(f"\nConsolidated Donut chart saved to: {output_path}")
+print("Categories merged into Biotech / Pharma: HealthTech, Software, Tools & Reagents, CRO-CDMO")
 
-
-### Partnership Data Analysis - PIE CHART VERSION
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.patheffects as path_effects
 
 # Load partnership data
 partnership_data = pd.read_csv('/data/morrisq/fuc/nucleate_research/attendance_analysis/data/interest_form.csv')
+
 # Initialize a dictionary to store category counts
 category_counts = {}
 
 # Process each row, splitting categories that are comma-separated
 for _, row in partnership_data.iterrows():
-    categories = [cat.strip() for cat in row['Category'].split(',')]
+    # Handle potential non-string values and split
+    raw_cat = str(row['Category'])
+    categories = [cat.strip() for cat in raw_cat.split(',')]
     number = row['Number']
     
-    # Distribute the count across all categories for this affiliation
+    # Distribute the count across all categories
     for category in categories:
         if category in category_counts:
             category_counts[category] += number
@@ -786,70 +749,79 @@ for _, row in partnership_data.iterrows():
 # Convert to Series and sort
 category_totals = pd.Series(category_counts).sort_values(ascending=False)
 
-# Group smaller categories into "Other"
-threshold = 15  # Categories with fewer than 15 partners will be grouped as "Other"
-category_filtered = category_totals[category_totals >= threshold]
+# Group smaller categories into "Other" (Threshold = 15)
+threshold = 15
+category_filtered = category_totals[category_totals >= threshold].copy()
 other_sum = category_totals[category_totals < threshold].sum()
 if other_sum > 0:
     category_filtered['Other'] = other_sum
 category_totals = category_filtered
 
-# Display distribution
-print("\n" + "="*50)
-print("PARTNERSHIP DISTRIBUTION BY CATEGORY")
-print("(Each person counted in all their categories)")
-print("="*50)
-print(category_totals)
-print(f"\nTotal Count (with overlap): {category_totals.sum()}")
+# Calculate total for center label
+grand_total = category_totals.sum()
 
-# Create pie chart with transparent background
-fig, ax = plt.subplots(figsize=(16, 12))
+# --- NUCLEATE BRANDING THEME ---
+nucleate_colors = [
+    '#0F054C', # Dark Navy
+    '#3B298B', # Deep Purple
+    '#8E85D6', # Mid Purple
+    '#9DBDD8', # Light Blue
+    '#C4C7F9', # Lavender
+    '#3E8A81', # Dark Teal
+    '#62D0AC', # Mint
+    '#ACF9E5', # Pale Teal
+    '#7C9FA8', # Slate Gray (Secondary)
+    '#B8D4DC'  # Pale Blue (Secondary)
+]
 
-# Make figure and axes background transparent
+# Create figure
+fig, ax = plt.subplots(figsize=(14, 10))
 fig.patch.set_alpha(0.0)
 ax.patch.set_alpha(0.0)
 
-# Color palette - matching the aesthetic
-colors = ['#4A7C8C', '#6BA5B8', '#8FC5D4', '#A8D5E2', '#7C9FA8',
-          '#5A8C9C', '#7BB5C8', '#9FD5E4', '#B8E5F2', '#8CAFA8']
-
-# Create pie chart with labels positioned on the slices
-wedges, texts = ax.pie(
+# Create the Donut Chart
+wedges, texts, autotexts = ax.pie(
     category_totals.values,
-    labels=category_totals.index,
+    autopct='%1.1f%%',
     startangle=90,
-    colors=colors[:len(category_totals)],
-    labeldistance=0.75,  # Position labels to overlay the pie slices
-    textprops={'fontsize': 16, 'color': 'white', 'weight': 'bold'}
+    colors=nucleate_colors[:len(category_totals)],
+    pctdistance=0.82, 
+    wedgeprops={'width': 0.4, 'edgecolor': 'none'}
 )
 
-# Style the labels - white text with black outline for readability
-for text in texts:
-    text.set_fontsize(24)
-    text.set_color('black')
-    text.set_weight('bold')
-    # Add text outline for better readability
-    text.set_path_effects([
-        path_effects.Stroke(linewidth=3, foreground='black', alpha=0.5),
-        path_effects.Normal()
-    ])
+# Style internal percentage labels
+plt.setp(autotexts, size=13, weight="bold", color="white")
 
-# Add title with clean typography
+# Add the Central Total (Nucleate Style)
+ax.text(0, 0, f'{int(grand_total):,}\nTOTAL\nPARTNERS', 
+        ha='center', va='center', 
+        fontsize=22, fontweight='bold', 
+        color='#000000', family='sans-serif')
+
+# Add Legend to the right
+ax.legend(
+    wedges, 
+    category_totals.index,
+    title="Partner Categories",
+    loc="center left",
+    bbox_to_anchor=(1, 0, 0.5, 1),
+    fontsize=12,
+    frameon=False
+)
+
+# Set title
 plt.title('Partnership Distribution by Category', 
-          fontsize=32, 
-          color='#2C3E50', 
-          pad=25,
-          fontweight='500',
-          family='sans-serif')
+          fontsize=28, 
+          color='#000000', 
+          pad=30,
+          fontweight='bold')
 
-# Equal aspect ratio ensures circular pie
 ax.axis('equal')
-
 plt.tight_layout()
-plt.savefig('./vis/partnership_distribution_by_category_pie.pdf', 
-            dpi=300, 
-            bbox_inches='tight',
-            transparent=True)
+
+# Save output
+output_path = './vis/final_figs/fig5_partnership_distribution_donut_branded.pdf'
+plt.savefig(output_path, dpi=300, bbox_inches='tight', transparent=True)
 plt.show()
 
-print("\nPie chart with partnership distribution saved successfully!")
+print(f"\nBranded Donut chart saved to: {output_path}")
